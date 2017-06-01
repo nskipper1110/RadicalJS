@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="widget/radical-widget.js"></script>
+        <script>
+            var myWidget = {
+                Properties: {
+                    Width: "30px",
+                    Height: "30px",
+                    Top: "0px",
+                    Left: "0px"
+                    
+                },
+                OnWidgetLoad: "function(widget, context){\n\
+                    if(typeof context !== 'undefined' && typeof widget.Properties.Width !== 'undefined' && typeof widget.Properties.Height !== 'undefined' && typeof widget.Properties.Top !== 'undefined' && typeof widget.Properties.Left !== 'undefined')\n\
+                    {\n\
+                        widget.Primitive = document.createElement('div');\n\
+                        widget.Primitive.setAttribute('style', 'position:absolute;top:' + widget.Properties.Top + ';left:' + widget.Properties.Left + ';height:' + widget.Properties.Height + ';width:' + widget.Properties.Width +  ';background-color:red;color:white');\n\
+                        widget.Primitive.textContent = 'Test This!';\n\
+                        context.appendChild(widget.Primitive);\n\
+                    }\n\
+                }"
+            }
+
+            function loadMe(context){
+
+                console.log("whatzup");
+            }
+
+            function whatzup_OnInstanceClick(widget, context, event){
+                alert("Whatzup got clicked!");
+            }
+            var MovingWidget = null;
+            function whatzup_OnInstanceMouseDown(widget, context, event){
+                //MouseIsDown = true;
+                MovingWidget = widget;
+            }
+
+            function whatzup_OnInstanceMouseUp(widget, context, event){
+                MovingWidget = null;
+            }
+
+            function whatzup_OnInstanceMouseMove(widget, context, event){
+                if(MovingWidget !== null){
+                    MovingWidget.Primitive.style.top = (event.pageY - (widget.Primitive.offsetHeight / 2)) + "px";
+                    MovingWidget.Primitive.style.left = (event.pageX - (widget.Primitive.offsetWidth / 2)) + "px";
+                    
+                }
+            }
+
+            function document_MouseMove(event){
+                if(MovingWidget !== null){
+                    MovingWidget.Primitive.style.top = (event.pageY - (widget.Primitive.offsetHeight / 2)) + "px";
+                    MovingWidget.Primitive.style.left = (event.pageX - (widget.Primitive.offsetWidth / 2)) + "px";
+                    
+                }
+            }
+
+            var widget = new RadicalWidget("whatzup");
+            widget.InitWidget(JSON.stringify(myWidget));
+        </script>
+    </head>
+    <body id="mybody" onmousemove="document_MouseMove(event)" onmouseup="whatzup_OnInstanceMouseUp(event)">
+
+    </body>
+    <script>
+        
+        widget.Load(document.getElementById("mybody"));
+    </script>
+
+</html>
