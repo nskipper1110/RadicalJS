@@ -200,7 +200,7 @@ RadicalWidget.prototype = {
      * @param {object} widget The widget instance on which the SetEnable function has been called.
      * @param {Element} context The DOM element in which the widget resides.
      * @param {boolean} enable Indicates whether to enable or disable the widget instance.
-     * @return {boolean} Return true if the widget enable state was changed, or false if not.
+     * @returns {boolean} Return true if the widget enable state was changed, or false if not.
      */
     OnWidgetSetEnabled: "function(widget, context, enable){}",
     /**
@@ -211,10 +211,44 @@ RadicalWidget.prototype = {
      * @return {boolean} Return the enabled state.
      */
     OnWidgetGetEnabled: "function(widget, context){}",
+    /**
+     * This is a widget level event handler which allows the widget to set the visible state for its primitive. This event is
+     * called from the SetVisible function.
+     * @param {object} widget The widget instance on which the SetVisible function was called.
+     * @param {Element} context The DOM context in which the widget instance is contained.
+     * @param {boolean} visible The boolean value indicating whether the widget instance should be visible or not.
+     */
     OnWidgetSetVisible: "function(widget, context, visible){}",
+    /**
+     * This is a widget level event handler fired from the "GetVisible" function, which allows the widget to return the
+     * visible state of the underlying elements.
+     * @param {object} widget The widget instance on which the GetVisible function was called.
+     * @param {Element} context The DOM element in which the widget instance is contained.
+     * @returns {boolean} Returns true if the widget instance is currently visible, or false otherwise.
+     */
     OnWidgetGetVisible: "function(widget, context){}",
+    /**
+     * This is a widget level event handler which allows the widget to return the current value for its primitive, represented in 
+     * a meaningful format to the caller. This event is called from the "GetValue" function.
+     * @param {object} widget The widget instance on which the GetValue function was called.
+     * @param {Element} context The DOM element containing the widget instance.
+     * @returns {any} Returns the value from the widget instance.
+     */
     OnWidgetGetValue: "function(widget, context){}",
+    /**
+     * This is a widget level event handler which allows the widget to set the current value for its primitive. This event is called from
+     * the "SetValue" function.
+     * @param {object} widget The widget instance on which the SetValue function was called.
+     * @param {Element} context The DOM context in which the widget instance is contained.
+     * 
+     */
     OnWidgetSetValue: "function(widget, context, value){}",
+    /**
+     * Sets a property for this widget instance.
+     * @param {string} name The name of the property to set.
+     * @param {any} value The value of the property to set.
+     * @returns {boolean} Returns true if the property was successfully set, or false otherwise.
+     */
     SetProperty: function(name, value){
         var retval = false;
         try{
@@ -234,6 +268,11 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Gets a property for this widget instance.
+     * @param {string} name The name of the property to get.
+     * @returns {any} Returns the value of the property, or null if there is no property for that name.
+     */
     GetProperty: function(name){
         var retval = null;
         try{
@@ -246,6 +285,11 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Initializes a widget instance based on the JSON string that defines the widget.
+     * @param {string} jsonString The JSON string that represents the widget.
+     * @returns {boolean} Returns true if the widget was successfully loaded from the json.
+     */
     InitWidget: function(jsonString){
         var retval = false;
         try{
@@ -289,6 +333,11 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Loads the widget instance into the DOM context. This function sets all events for the instance
+     * and calls the widget's load function to generate the element.
+     * @param {Element} context 
+     */
     Load: function(context){
         var retval = true;
         try{
@@ -403,6 +452,12 @@ RadicalWidget.prototype = {
             retval = false;
         }
     },
+
+    /**
+     * Sets a widget instance's enabled behavior.
+     * @param {boolean} enable Sets the enabled state.
+     * @returns {boolean} Returns true if the enabled state was set.
+     */
     SetEnabled: function(enable){
         var retval = false;
         try{
@@ -416,6 +471,10 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Returns the enabled state of the current widget instance.
+     * @returns {boolean} Returns true if the instance is enabled.
+     */
     GetEnabled: function(){
         var retval = false;
         try{
@@ -429,6 +488,11 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Sets the visible state of the widget instance.
+     * @param {boolean} visible If true, the widget instance is made visible.
+     * @returns {boolean} returns true if the instance's visibility was changed.
+     */
     SetVisible: function(visible){
         var retval = false;
         try{
@@ -442,6 +506,10 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Returns the current visibility of the instance.
+     * @returns {boolean} returns true if the instance is visible.
+     */
     GetVisible: function(){
         var retval = false;
         try{
@@ -455,6 +523,10 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Returns the current value set for the instance.
+     * @returns {any} Returns the value of the instance.
+     */
     GetValue: function(){
         var retval = null;
         try{
@@ -469,6 +541,11 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Sets the value of the instance.
+     * @param {any} val The value to set the instance to.
+     * @returns {boolean} returns true if the value was successfully set.
+     */
     SetValue: function(val){
         var retval = false;
         try{
@@ -485,6 +562,11 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Adds a child to this widget instance and sets the child's "Parent" property to this instance.
+     * @param {object} child The child instance to add to this instance.
+     * @returns {boolean} returns true if the child was added.
+     */
     AddChild: function(child){
         var retval = false;
         try{
@@ -513,6 +595,11 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Removes a child from this instance.
+     * @param {object} child The child to remove from the instance.
+     * @returns {boolean} returns true if the child was removed.
+     */
     RemoveChild: function(child){
         var retval = false;
         try{
@@ -537,6 +624,11 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Gets the index within the "Children" array of the child provided.
+     * @param {object} child The child to search for.
+     * @returns {int} returns -1 if the child could not be found, or the index of the child in the array if found.
+     */
     GetChildIndex: function(child){
         var retval = -1;
         try{
@@ -556,6 +648,10 @@ RadicalWidget.prototype = {
         }
         return retval;
     },
+    /**
+     * Exports the current widget as a JSON string.
+     * @returns {string} returns the string representation of this widget.
+     */
     ExportWidget: function(){
         return JSON.stringify(this);
     }
