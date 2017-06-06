@@ -22,3 +22,111 @@
  * and the Application. The frame is a container which facilitates the layout of all widgets added
  * to it.
  */
+
+function rdinclude(url, type){
+  try{
+    
+    if(typeof type === "undefined"){
+      if(url.toLowerCase().indexOf(".js")){
+        type = "script";
+      }
+      else if(url.toLowerCase().indexOf(".css")){
+        type = "css";
+      }
+      else{
+        type = "script";
+      }
+    }
+    var heads = document.getElementsByTagName("head");
+    var head = null;
+    if(heads.length > 0){
+      head = heads[0];
+    }
+    else{
+      head = document.createElement("head");
+      document.appendChild(head);
+    }        
+    if(head){
+      var found = false;
+      var scripts = null;
+      switch(type){
+        case "script":
+          scripts = document.getElementsByTagName("script");
+          for(var x = 0; x < scripts.length; x ++){
+            if(scripts[x].src === url){
+              found = true;
+              break;
+            }
+          }
+          if(!found){
+            var script = document.createElement("script");
+            script.src = url;
+            head.appendChild(script);
+          }
+          
+          break;
+        case "css":
+          scripts = document.getElementsByTagName("link");
+          found = false;
+          for(var x = 0; x < scripts.length; x ++){
+            if(scripts[x].href === url){
+              found = true;
+              break;
+            }
+          }
+          if(!found){
+            var script = document.createElement("link");
+            script.href = url;
+            script.rel = "stylesheet";
+            script.type = "text/css";
+            head.appendChild(script);
+          }
+          break;
+      }
+    }
+    
+  }
+  catch(e){
+    console.log(e);
+  }
+}
+
+/**
+ * instantiates a new RadicalFrame object with an Instance ID and Document
+ * @param {string} id An instance ID for this frame. (optional)
+ * @param {Document} doc A Document object for this frame. (optional)
+ * @param {string} json A json string representing this RadicalFrame (optional)
+ */
+function RadicalFrame(id, doc, json){
+  if(typeof doc === "undefined")
+  {
+    doc = null;
+  }
+  if(typeof id === "undefined"){
+    id = "Frame1";
+  }
+  this.Document = doc;
+  this.InstanceID = id;
+  
+}
+
+RadicalFrame.prototype = {
+  Properties: {
+    Width: "300px",
+    Height: "300px",
+    Position: "absolute",
+    Border: "none",
+    BorderWidth: "0px",
+    Top: "0px",
+    Left: "0px",
+    Scrollable: true,
+    BrowserMenu: false,
+    BrowserAddress: false,
+    Resizable: false,
+    StatusBar: false,
+    Title: "Frame1"
+  },
+  Widgets: [],
+  Scripts: [],
+  StyleSheets: [],
+}

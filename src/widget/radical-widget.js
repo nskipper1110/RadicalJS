@@ -70,7 +70,7 @@ RadicalWidget.prototype = {
     /**
      * The name of this widget.
      */
-    Name: "",
+    Name: "[Name]",
     /**
      * The instance Value for this widget. This property represents the value set in the instance, if any. It should be changed
      * using the SetValue and GetValue functions, which validate the value and notify the widget of changes.
@@ -157,43 +157,47 @@ RadicalWidget.prototype = {
     OnInstanceMouseUp: function(widget, context, event){console.log('RadicalWidget.OnMouseUp');},
     /**
      * This is an event handler for the widget which notifies the widget when a new child is added using the
-     * "AddChild" function.
+     * "AddChild" function. This should be implemented within the document context, and the Load function will
+     * associate any function named with [Name]_OnWidgetAddChild to this function, where [Name] is the Name property of this widget.
      * @param {object} widget The widget instance on which the event occurred.
      * @param {Element} context The DOM element containing the widget.
      * @param {object} child The child widget instance to add.
      * @return {boolean} Should return true if the child can be added, or false if it cannot.
      */
-    OnWidgetAddChild: "function(widget, context, child){}",
+    OnWidgetAddChild: function(widget, context, child){return true;},
     /**
      * This is an event handler for the widget which notifies the widget when a child is removed using the
-     * "RemoveChild" function.
+     * "RemoveChild" function. This function can be overridden by implementing a function within the document
+     * context as [Name]_OnWidgetRemoveChild
      * @param {object} widget The widget instance on which the event occurred.
      * @param {Element} context The DOM element containing the widget.
      * @param {object} child The child widget instance to remove.
      * @return {boolean} Should return true if the child can be removed, or false if it cannot.
      */
-    OnWidgetRemoveChild: "function(widget, context, child){}",
+    OnWidgetRemoveChild: function(widget, context, child){return true;},
     /**
      * This event handler notifies the widget when a property changes so the widget can adjust behaviors.
+     * This function can be overridden by implementing a function in the document as [Name]_OnWidgetRemoveChild
      * @param {object} widget The widget instance on which the event occurred.
      * @param {Element} context the DOM element containing the widget.
      * @param {string} property the name of the property that was changed.
      */
-    OnWidgetPropertyChange: "function(widget, context, property){}",
+    OnWidgetPropertyChange: function(widget, context, property){return true;},
     /**
      * This event is called when the widget instance Load function is called. This event handler should
      * at a minimum instantiate the Primitive and EventPrimitive values and set the DOM id attribute for the primitive.
+     * This function can be overridden by implementing [Name]_OnWidgetLoad within the document.
      * @param {object} widget The widget instance on which the Load is occurring.
      * @param {Element} context The DOM element into which this widget instance is being placed.
      */
-    OnWidgetLoad: "function(widget, context){\n\
-        widget.Primitive = document.createElement('div');\n\
-        widget.Primitive.id = widget.InstanceID;\n\
-        widget.EventPrimitive = widget.Primitive;\n\
-        if(typeof context !== 'undefined'){\n\
-            context.appendChild(widget.Primitive);\n\
-        }\n\
-    }",
+    OnWidgetLoad: function(widget, context){
+        widget.Primitive = document.createElement('div');
+        widget.Primitive.id = widget.InstanceID;
+        widget.EventPrimitive = widget.Primitive;
+        if(typeof context !== 'undefined'){
+            context.appendChild(widget.Primitive);
+        }
+    },
     /**
      * An event handler that will receive notifications of changes to the enabled state of a widget instance. The
      * widget designer should write code which will dictate the behavior of the widget when an instance implementing this instance is enabled or disabled.
@@ -202,7 +206,7 @@ RadicalWidget.prototype = {
      * @param {boolean} enable Indicates whether to enable or disable the widget instance.
      * @returns {boolean} Return true if the widget enable state was changed, or false if not.
      */
-    OnWidgetSetEnabled: "function(widget, context, enable){}",
+    OnWidgetSetEnabled: function(widget, context, enable){return true;},
     /**
      * An event handler that will receive notifications when GetEnabled is called for a widget instance. The
      * widget designer should write code which will indicate when the widget is enabled or disabled.
@@ -210,7 +214,7 @@ RadicalWidget.prototype = {
      * @param {Element} context The DOM element in which the widget resides.
      * @return {boolean} Return the enabled state.
      */
-    OnWidgetGetEnabled: "function(widget, context){}",
+    OnWidgetGetEnabled: function(widget, context){return true;},
     /**
      * This is a widget level event handler which allows the widget to set the visible state for its primitive. This event is
      * called from the SetVisible function.
@@ -218,7 +222,7 @@ RadicalWidget.prototype = {
      * @param {Element} context The DOM context in which the widget instance is contained.
      * @param {boolean} visible The boolean value indicating whether the widget instance should be visible or not.
      */
-    OnWidgetSetVisible: "function(widget, context, visible){}",
+    OnWidgetSetVisible: function(widget, context, visible){},
     /**
      * This is a widget level event handler fired from the "GetVisible" function, which allows the widget to return the
      * visible state of the underlying elements.
@@ -226,7 +230,7 @@ RadicalWidget.prototype = {
      * @param {Element} context The DOM element in which the widget instance is contained.
      * @returns {boolean} Returns true if the widget instance is currently visible, or false otherwise.
      */
-    OnWidgetGetVisible: "function(widget, context){}",
+    OnWidgetGetVisible: function(widget, context){return true;},
     /**
      * This is a widget level event handler which allows the widget to return the current value for its primitive, represented in 
      * a meaningful format to the caller. This event is called from the "GetValue" function.
@@ -234,7 +238,7 @@ RadicalWidget.prototype = {
      * @param {Element} context The DOM element containing the widget instance.
      * @returns {any} Returns the value from the widget instance.
      */
-    OnWidgetGetValue: "function(widget, context){}",
+    OnWidgetGetValue: function(widget, context){return null;},
     /**
      * This is a widget level event handler which allows the widget to set the current value for its primitive. This event is called from
      * the "SetValue" function.
@@ -242,7 +246,7 @@ RadicalWidget.prototype = {
      * @param {Element} context The DOM context in which the widget instance is contained.
      * 
      */
-    OnWidgetSetValue: "function(widget, context, value){}",
+    OnWidgetSetValue: function(widget, context, value){},
     /**
      * Sets a property for this widget instance.
      * @param {string} name The name of the property to set.
@@ -252,10 +256,10 @@ RadicalWidget.prototype = {
     SetProperty: function(name, value){
         var retval = false;
         try{
-            if(typeof Properties === "Array"){
-                if(typeof Properties[name] !== "undefined"){
-                    Properties[name] = value;
-                    var func = window[this.InstanceID + "_WidgetEvents.OnWidgetPropertyChange"];
+            if(typeof this.Properties === "object"){
+                if(typeof this.Properties[name] !== "undefined"){
+                    this.Properties[name] = value;
+                    var func = window[this.Name + "_OnWidgetPropertyChange"];
                     if(typeof func === "function"){
                         func(this, this.Context, name);
                         retval = true;
@@ -300,30 +304,7 @@ RadicalWidget.prototype = {
             if(widget.Properties){
                 this.Properties = widget.Properties;
             }
-            if(widget.OnWidgetGetEnabled){
-                this.OnWidgetGetEnabled = widget.OnWidgetGetEnabled;
-            }
-            if(widget.OnWidgetGetValue){
-                this.OnWidgetGetValue = widget.OnWidgetGetValue;
-            }
-            if(widget.OnWidgetGetVisible){
-                this.OnWidgetGetVisible = widget.OnWidgetGetVisible;
-            }
-            if(widget.OnWidgetLoad){
-                this.OnWidgetLoad = widget.OnWidgetLoad;
-            }
-            if(widget.OnWidgetPropertyChange){
-                this.OnWidgetPropertyChange = widget.OnWidgetPropertyChange;
-            }
-            if(widget.OnWidgetSetEnabled){
-                this.OnWidgetSetEnabled = widget.OnWidgetSetEnabled;
-            }
-            if(widget.OnWidgetSetValue){
-                this.OnWidgetSetValue = widget.OnWidgetSetValue;
-            }
-            if(widget.OnWidgetSetVisible){
-                this.OnWidgetSetVisible = widget.OnWidgetSetVisible;
-            }
+            
             if(widget.Name){
                 this.Name = widget.Name;
             }
@@ -342,12 +323,12 @@ RadicalWidget.prototype = {
         var retval = true;
         try{
             this.Context = context;
-            var widgetScript = document.getElementById(this.InstanceID + "_WidgetEvents");
+            /*var widgetScript = document.getElementById(this.InstanceID + "_WidgetEvents");
             var widgetDec = document.getElementById("WidgetDeclarations");
             
-            var head = document.getElementsByTagName("head")[0];
+            var head = document.getElementsByTagName("head")[0];*/
             
-            if(!widgetDec){
+            /*if(!widgetDec){
                 widgetDec = document.createElement("script");
                 widgetDec.id = "WidgetDeclarations";
                 head.appendChild(widgetDec);
@@ -357,7 +338,7 @@ RadicalWidget.prototype = {
                 }
             }
             var widgetEvents = window[this.InstanceID + "_WidgetEvents"];
-            widgetEvents.WidgetInstance = this;
+            widgetEvents.WidgetInstance = this;*/
             
             var cevent = window[this.InstanceID + "_OnInstanceClick"];
             if(typeof cevent === "function"){
@@ -388,13 +369,50 @@ RadicalWidget.prototype = {
             if(typeof cevent === "function"){
                 this.OnInstanceMouseUp = cevent;
             }
-
-            if(widgetScript == null){
-                widgetScript = document.createElement("script");
-                widgetScript.id = this.InstanceID + "_WidgetEvents";
+            //widget event assignments
+            cevent = window[this.Name + "_OnWidgetLoad"];
+            if(typeof cevent === "function"){
+                this.OnWidgetLoad = cevent;
+            }
+            cevent = window[this.Name + "_OnWidgetAddChild"];
+            if(typeof cevent === "function"){
+                this.OnWidgetAddChild = cevent;
+            }
+            cevent = window[this.Name + "_OnWidgetGetEnabled"];
+            if(typeof cevent === "function"){
+                this.OnWidgetGetEnabled = cevent;
+            }
+            cevent = window[this.Name + "_OnWidgetGetVisible"];
+            if(typeof cevent === "function"){
+                this.OnWidgetGetVisible = cevent;
+            }
+            cevent = window[this.Name + "_OnWidgetGetValue"];
+            if(typeof cevent === "function"){
+                this.OnWidgetGetValue = cevent;
+            }
+            cevent = window[this.Name + "_OnWidgetPropertyChange"];
+            if(typeof cevent === "function"){
+                this.OnWidgetPropertyChange = cevent;
+            }
+            cevent = window[this.Name + "_OnWidgetRemoveChild"];
+            if(typeof cevent === "function"){
+                this.OnWidgetRemoveChild = cevent;
+            }
+            cevent = window[this.Name + "_OnWidgetSetEnabled"];
+            if(typeof cevent === "function"){
+                this.OnWidgetSetEnabled = cevent;
+            }
+            cevent = window[this.Name + "_OnWidgetSetValue"];
+            if(typeof cevent === "function"){
+                this.OnWidgetSetValue = cevent;
             }
 
-            widgetScript.innerText = this.InstanceID + "_WidgetEvents.OnWidgetLoad = " + this.OnWidgetLoad + ";\n";
+            /*if(widgetScript == null){
+                widgetScript = document.createElement("script");
+                widgetScript.id = this.InstanceID + "_WidgetEvents";
+            }*/
+
+            /*widgetScript.innerText = this.InstanceID + "_WidgetEvents.OnWidgetLoad = " + this.OnWidgetLoad + ";\n";
             widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetSetEnabled = " + this.OnWidgetSetEnabled + ";\n";
             widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetGetEnabled = " + this.OnWidgetGetEnabled + ";\n";
             widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetSetVisible = " + this.OnWidgetSetVisible + ";\n";
@@ -403,10 +421,17 @@ RadicalWidget.prototype = {
             widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetGetValue = " + this.OnWidgetGetValue + ";\n";
             widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetAddChild = " + this.OnWidgetAddChild + ";\n";
             widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetRemoveChild = " + this.OnWidgetRemoveChild + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetPropertyChange = " + this.OnWidgetPropertyChange + ";\n";
+            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetPropertyChange = " + this.OnWidgetPropertyChange + ";\n";*/
             
-            head.appendChild(widgetScript);
-            eval(this.InstanceID + "_WidgetEvents.OnWidgetLoad(" + this.InstanceID + "_WidgetEvents.WidgetInstance, " + this.InstanceID + "_WidgetEvents.WidgetInstance.Context);");
+            //head.appendChild(widgetScript);
+            cevent = window[this.Name + "_OnWidgetLoad"];
+            if(typeof cevent === "function"){
+                cevent(this, this.Context);
+            }
+            if(this.EventPrimitive == null){
+                this.EventPrimitive = this.Primitive;
+            }
+            //eval(this.InstanceID + "_WidgetEvents.OnWidgetLoad(" + this.InstanceID + "_WidgetEvents.WidgetInstance, " + this.InstanceID + "_WidgetEvents.WidgetInstance.Context);");
             if(this.EventPrimitive){
                 var context = this.Context;
                 var widget = this;
@@ -461,7 +486,7 @@ RadicalWidget.prototype = {
     SetEnabled: function(enable){
         var retval = false;
         try{
-            var func = window[this.InstanceID + "_WidgetEvents.OnWidgetSetEnabled"];
+            var func = window[this.Name + "_OnWidgetSetEnabled"];
             if(typeof func === "function"){
                 retval = func(this, this.Context, enable);
             }
@@ -478,7 +503,7 @@ RadicalWidget.prototype = {
     GetEnabled: function(){
         var retval = false;
         try{
-            var func = window[this.InstanceID + "_WidgetEvents.OnWidgetGetEnabled"];
+            var func = window[this.Name + "_OnWidgetGetEnabled"];
             if(typeof func === "function"){
                 retval = func(this, this.Context);
             }
@@ -496,7 +521,7 @@ RadicalWidget.prototype = {
     SetVisible: function(visible){
         var retval = false;
         try{
-            var func = window[this.InstanceID + "_WidgetEvents.OnWidgetSetVisible"];
+            var func = window[this.Name + "_OnWidgetSetVisible"];
             if(typeof func === "function"){
                 retval = func(this, this.Context, visible);
             }
@@ -513,7 +538,7 @@ RadicalWidget.prototype = {
     GetVisible: function(){
         var retval = false;
         try{
-            var func = window[this.InstanceID + "_WidgetEvents.OnWidgetGetVisible"];
+            var func = window[this.Name + "_OnWidgetGetVisible"];
             if(typeof func === "function"){
                 retval = func(this, this.Context);
             }
@@ -530,7 +555,7 @@ RadicalWidget.prototype = {
     GetValue: function(){
         var retval = null;
         try{
-            var func = window[this.InstanceID + "_WidgetEvents.OnWidgetGetValue"];
+            var func = window[this.Name + "_OnWidgetGetValue"];
             if(typeof func === "function"){
                 func(this, this.Context);
             }
@@ -549,7 +574,7 @@ RadicalWidget.prototype = {
     SetValue: function(val){
         var retval = false;
         try{
-            var func = window[this.InstanceID + "_WidgetEvents.OnWidgetSetValue"];
+            var func = window[this.Name + "_OnWidgetSetValue"];
             if(typeof func === "function"){
                 retval = func(this, this.Context, val);
                 if(retval){
@@ -570,7 +595,7 @@ RadicalWidget.prototype = {
     AddChild: function(child){
         var retval = false;
         try{
-            var func = window[this.InstanceID + "_WidgetEvents.OnWidgetAddChild"];
+            var func = window[this.Name + "_OnWidgetAddChild"];
             if(typeof func === "function"){
                 retval = func(this, this.Context, child);
             }
@@ -605,7 +630,7 @@ RadicalWidget.prototype = {
         try{
             var x = this.GetChildIndex(child);
             if(x > -1){
-                var func = window[this.InstanceID + "_WidgetEvents.OnWidgetRemoveChild"];
+                var func = window[this.Name + "_OnWidgetRemoveChild"];
                 if(typeof func === "function"){
                     retval = func(this, this.Context, child);
                 }

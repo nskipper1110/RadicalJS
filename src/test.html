@@ -2,6 +2,7 @@
 <html>
     <head>
         <script src="widget/radical-widget.js"></script>
+        <script src="designer/WidgetHandle.js"></script>
         <script>
             var myWidget = {
                 Properties: {
@@ -9,17 +10,19 @@
                     Height: "30px",
                     Top: "0px",
                     Left: "0px"
-                    
+                
                 },
-                OnWidgetLoad: "function(widget, context){\n\
-                    if(typeof context !== 'undefined' && typeof widget.Properties.Width !== 'undefined' && typeof widget.Properties.Height !== 'undefined' && typeof widget.Properties.Top !== 'undefined' && typeof widget.Properties.Left !== 'undefined')\n\
-                    {\n\
-                        widget.Primitive = document.createElement('div');\n\
-                        widget.Primitive.setAttribute('style', 'position:absolute;top:' + widget.Properties.Top + ';left:' + widget.Properties.Left + ';height:' + widget.Properties.Height + ';width:' + widget.Properties.Width +  ';background-color:red;color:white');\n\
-                        widget.Primitive.textContent = 'Test This!';\n\
-                        context.appendChild(widget.Primitive);\n\
-                    }\n\
-                }"
+                Name: "TestWidget"
+                
+            }
+            function TestWidget_OnWidgetLoad(widget, context){
+                if(typeof context !== 'undefined' && typeof widget.Properties.Width !== 'undefined' && typeof widget.Properties.Height !== 'undefined' && typeof widget.Properties.Top !== 'undefined' && typeof widget.Properties.Left !== 'undefined')
+                {
+                    widget.Primitive = document.createElement('div');
+                    widget.Primitive.setAttribute('style', 'position:absolute;top:' + widget.Properties.Top + ';left:' + widget.Properties.Left + ';height:' + widget.Properties.Height + ';width:' + widget.Properties.Width +  ';background-color:red;color:white');
+                    widget.Primitive.textContent = 'Test This!';
+                    context.appendChild(widget.Primitive);
+                }
             }
 
             function loadMe(context){
@@ -27,8 +30,29 @@
                 console.log("whatzup");
             }
 
+            function addHandles(widget){
+                var bottomRightHandle = new RadicalWidget("BottomRightHandle", WidgetHandle_Widget_JSON);
+                bottomRightHandle.Load(widget.Primitive);
+                widget.AddChild(bottomRightHandle);
+                bottomRightHandle.SetProperty("Right", "100%");
+                bottomRightHandle.SetProperty("Bottom", "100%");
+                bottomRightHandle.SetProperty("Top", "98%");
+                bottomRightHandle.SetProperty("Left", "98%");
+                
+            }
+            
+            function BottomRightHandle_OnInstanceMouseDown(widget, context, event){
+
+            }
+
+            function BottomRightHandle_OnInstanceMouseUp(widget, context, event){
+
+            }
+
+            
+
             function whatzup_OnInstanceClick(widget, context, event){
-                alert("Whatzup got clicked!");
+                addHandles(widget);
             }
             var MovingWidget = null;
             function whatzup_OnInstanceMouseDown(widget, context, event){
@@ -66,9 +90,6 @@
     <script>
         
         widget.Load(document.getElementById("mybody"));
-        var template = new RadicalWidget("template");
-        var temp = JSON.stringify(RadicalWidget.prototype);
-        document.write(temp);
     </script>
 
 </html>
