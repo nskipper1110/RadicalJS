@@ -8,6 +8,13 @@
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
+            "name": "Launch Widget Template",
+            "file": "${workspaceRoot}/src/designer/widget-template.html"
+        },
+        {
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
             "name": "Launch Test",
             "file": "${workspaceRoot}/src/test.html"
         }

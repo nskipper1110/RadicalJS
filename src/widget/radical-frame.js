@@ -23,6 +23,13 @@
  * to it.
  */
 
+/**
+ * This function is a global function used within Radical to import needed scripts and stylesheets.
+ * @param {string} url The path to the resource that should be included.
+ * @param {string} type Designates the type of resource. If this parameter is not supplied, the function
+ * will try to guess the file type based on the extension. If no guess can be made, it assumes that this is a script file.
+ * The two options for this parameter are "script" and "css".
+ */
 function rdinclude(url, type){
   try{
     
@@ -92,6 +99,24 @@ function rdinclude(url, type){
 }
 
 /**
+ * Provides an enumeration of the possible Frame windowing modes.
+ */
+var RadicalFrameModes = {
+  /**
+   * The Frame will be instantiated within a separate window which is independent of the current document context.
+   */
+  Window: 0,
+  /**
+   * The frame will be instantiated within a separate window and will block when the "Show" function is called until the window is closed.
+   */
+  Dialog: 1,
+  /**
+   * The frame will be instantiated within the current window.
+   */
+  InternalWindow: 2
+}
+
+/**
  * instantiates a new RadicalFrame object with an Instance ID and Document
  * @param {string} id An instance ID for this frame. (optional)
  * @param {Document} doc A Document object for this frame. (optional)
@@ -100,17 +125,24 @@ function rdinclude(url, type){
 function RadicalFrame(id, doc, json){
   if(typeof doc === "undefined")
   {
-    doc = null;
+    doc = document;
   }
   if(typeof id === "undefined"){
     id = "Frame1";
   }
   this.Document = doc;
   this.InstanceID = id;
+  if(typeof json !== "undefined"){
+    this.InitFrame(json);
+  }
   
 }
 
 RadicalFrame.prototype = {
+  /**
+   * An object representing the properties defined for this frame. There are standard properties which all
+   * frames represent which are instantiated with a new frame.
+   */
   Properties: {
     Width: "300px",
     Height: "300px",
@@ -126,7 +158,116 @@ RadicalFrame.prototype = {
     StatusBar: false,
     Title: "Frame1"
   },
+  /**
+   * The widget instances that have been drawn into this frame.
+   */
   Widgets: [],
+  /**
+   * The scripts which this frame is dependent on.
+   */
   Scripts: [],
+  /**
+   * The style sheets this frame is dependent on.
+   */
   StyleSheets: [],
+  /**
+   * The classes that should be assigned to the body of this frame.
+   */
+  Classes: [],
+  /**
+   * The name of the frame.
+   */
+  Name: "[Name]",
+  /**
+   * The DOM element representing this frame.
+   */
+  Primitive: null,
+  /**
+   * The DOM element from which events will originate.
+   */
+  EventPrimitive: null,
+  
+  OnFrameLoad: function(frame, mode, context){
+
+  },
+  
+  OnFrameShow: function(frame, context){
+
+  },
+
+  OnFrameHide: function(frame, context){
+
+  },
+
+  OnFramePropertyChange: function(frame, context, property){
+
+  },
+
+  Show: function(){
+
+  },
+
+  Hide: function(){
+
+  },
+  Load: function(context, mode){
+
+  },
+  /**
+   * This function initializes a RadicalFrame object based on a JSON definition.
+   * @param {string} jsonString The string of JSON to use as the basis for defining this frame.
+   * @returns {boolean} Returns true if the frame was successfully initialized.
+   */
+  InitFrame: function(jsonString){
+    var retval = false;
+        try{
+            var frame = JSON.parse(jsonString);
+            this.Classes = [];
+            if(frame.Classes){
+                this.Classes = frame.Classes;
+            }
+            this.Properties = {};
+            if(frame.Properties){
+                this.Properties = frame.Properties;
+            }
+            this.Name = "[Name]";
+            if(frame.Name){
+                this.frame = frame.Name;
+            }
+            this.Widgets = [];
+            if(frame.Widgets){
+                this.Widgets = frame.Widgets;
+            }
+            this.Scripts = [];
+            if(frame.Scripts){
+                this.Scripts = frame.Scripts;
+            }
+
+            this.StyleSheets = [];
+            if(frame.StyleSheets){
+                this.StyleSheets = frame.StyleSheets;
+            }
+            
+            this.Primitive = null;
+            if(frame.Primitive){
+                this.Primitive = frame.Primitive;
+            }
+            this.EventPrimitive = null;
+            if(frame.EventPrimitive){
+                this.EventPrimitive = frame.EventPrimitive;
+            }
+            retval = true;
+        }
+        catch(e){
+            console.log(e);
+        }
+        return retval;
+  },
+  ExportFrame: function(){
+
+  },
+  Compile: function(){
+
+  }
+  
 }

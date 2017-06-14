@@ -298,16 +298,39 @@ RadicalWidget.prototype = {
         var retval = false;
         try{
             var widget = JSON.parse(jsonString);
+            this.Classes = [];
             if(widget.Classes){
                 this.Classes = widget.Classes;
             }
+            this.Properties = {};
             if(widget.Properties){
                 this.Properties = widget.Properties;
             }
-            
+            this.Name = "[Name]";
             if(widget.Name){
                 this.Name = widget.Name;
             }
+            this.Children = [];
+            if(widget.Children){
+                this.Children = widget.Children;
+            }
+            this.Context = null;
+            if(widget.Context){
+                this.Context = widget.Context;
+            }
+            this.Parent = null;
+            if(widget.Parent){
+                this.Parent = widget.Parent;
+            }
+            this.Primitive = null;
+            if(widget.Primitive){
+                this.Primitive = widget.Primitive;
+            }
+            this.EventPrimitive = null;
+            if(widget.EventPrimitive){
+                this.EventPrimitive = widget.EventPrimitive;
+            }
+            retval = true;
         }
         catch(e){
             console.log(e);
@@ -678,7 +701,19 @@ RadicalWidget.prototype = {
      * @returns {string} returns the string representation of this widget.
      */
     ExportWidget: function(){
-        return JSON.stringify(this);
+        var script = "var " + this.Name + "_Widget_Definition = " + JSON.stringify(this,null,4) + ";\n";
+        script += "var " + this.Name + "_Widget_JSON = JSON.stringify(" + this.Name + "_Widget_Definition);\n"
+        script += "var " + this.Name + "_OnWidgetLoad = " + this.OnWidgetLoad.toString() + ";\n";
+        script += "var " + this.Name + "_OnWidgetAddChild = " + this.OnWidgetAddChild.toString() + ";\n";
+        script += "var " + this.Name + "_OnWidgetRemoveChild = " + this.OnWidgetRemoveChild.toString() + ";\n";
+        script += "var " + this.Name + "_OnWidgetPropertyChange = " + this.OnWidgetPropertyChange.toString() + ";\n";
+        script += "var " + this.Name + "_OnWidgetSetEnabled = " + this.OnWidgetSetEnabled.toString() + ";\n";
+        script += "var " + this.Name + "_OnWidgetGetEnabled = " + this.OnWidgetGetEnabled.toString() + ";\n";
+        script += "var " + this.Name + "_OnWidgetSetVisible = " + this.OnWidgetSetVisible.toString() + ";\n";
+        script += "var " + this.Name + "_OnWidgetGetVisible = " + this.OnWidgetGetVisible.toString() + ";\n";
+        script += "var " + this.Name + "_OnWidgetGetValue = " + this.OnWidgetGetValue.toString() + ";\n";
+        script += "var " + this.Name + "_OnWidgetSetValue = " + this.OnWidgetSetValue.toString() + ";\n";
+        return script;
     }
 }
 

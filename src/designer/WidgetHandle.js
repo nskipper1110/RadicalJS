@@ -21,7 +21,7 @@ var WidgetHandle_Widget_Definition = {
 
 var WidgetHandle_Widget_JSON = JSON.stringify(WidgetHandle_Widget_Definition);
 
-function WidgetHandle_OnWidgetLoad(widget, context) {
+var WidgetHandle_OnWidgetLoad = function(widget, context) {
     try {
         widget.Primitive = document.createElement('span');
 

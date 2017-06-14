@@ -1,9 +1,24 @@
 <html>
     <head>
+        <link rel="stylesheet" href="codemirror/codemirror.css">
+        <script src="codemirror/codemirror.js"></script>
+        <script src="codemirror/javascript.js"></script>
         <script src="../widget/radical-widget.js"></script>
     </head>
     <body>
-        <textarea rows="20" cols="200"></textarea>
+        <form>
+        <div>
+            <textarea rows="20" cols="100">
+
+            </textarea>
+        </div>
+        <div>
+            Enter The Widget Name: <input type="text" id="WidgetName" value="WidgetTemplate"/>
+        </div>
+        <div>
+            <button type="button" onclick="generate()">Generate</div>
+        </div>
+        </form>
     </body>
     <script>
         function download(filename, text) {
@@ -19,28 +34,34 @@
             document.body.removeChild(element);
         }
 
+        function generate(){
+            var tarea = document.getElementsByTagName("textarea")[0];
+            var name = document.getElementById("WidgetName").value;
+            if(name == null){
+                alert("You have to give me a name!");
+                return;
+            }
+            else if(name.length == 0){
+                alert("You have to give me a name!");
+                return;
+            }
+                
+            
+            var widget = new RadicalWidget(name + "_1", JSON.stringify(RadicalWidget.prototype));
+            widget.Name = name;
+            var script = widget.ExportWidget();
+            tarea.textContent = script;
+            
+            download(name + ".js", script);
+        }
 
-        var tarea = document.getElementsByTagName("textarea")[0];
-        var script = "var [Name]_Widget_Definition = " + JSON.stringify(RadicalWidget.prototype,null,4) + ";\n";
-        script += "var [Name]_Widget_JSON = JSON.stringify([Name]_Widget_Definition);\n"
-        script += "function [Name]_OnWidgetLoad(widget, context){\n\
-            widget.Primitive = document.createElement('div');\n\
-            widget.Primitive.id = widget.InstanceID;\n\
-            widget.EventPrimitive = widget.Primitive;\n\
-            if(typeof context !== 'undefined'){\n\
-                context.appendChild(widget.Primitive);\n\
-            }\n\
-        }\n";
-        script += "function [Name]_OnWidgetAddChild(widget, context, child){return true;}\n";
-        script += "function [Name]_OnWidgetRemoveChild(widget, context, child){return true;}\n";
-        script += "function [Name]_OnWidgetPropertyChange(widget, context, property){return true;}\n";
-        script += "function [Name]_OnWidgetSetEnabled(widget, context, enable){return true;}\n";
-        script += "function [Name]_OnWidgetGetEnabled(widget, context){return true;}\n";
-        script += "function [Name]_OnWidgetSetVisible(widget, context, visible){}\n";
-        script += "function [Name]_OnWidgetGetVisible(widget, context){return true;}\n";
-        script += "function [Name]_OnWidgetGetValue(widget, context){return null;}\n";
-        script += "function [Name]_OnWidgetSetValue(widget, context, value){}\n";
-        tarea.value = script;
-        download("widget-template.js", script);
+        var editor = CodeMirror.fromTextArea(document.getElementsByTagName("textarea")[0], {
+            lineNumbers: true,
+                styleActiveLine: true,
+                matchBrackets: true,
+                mode: "javascript"
+        });
+        
+        
     </script>
 </html>
