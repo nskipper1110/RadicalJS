@@ -60,7 +60,7 @@ function rdinclude(url, type){
         case "script":
           scripts = document.getElementsByTagName("script");
           for(var x = 0; x < scripts.length; x ++){
-            if(scripts[x].src === url){
+            if(scripts[x].getAttribute("src") === url){
               found = true;
               break;
             }
@@ -76,7 +76,7 @@ function rdinclude(url, type){
           scripts = document.getElementsByTagName("link");
           found = false;
           for(var x = 0; x < scripts.length; x ++){
-            if(scripts[x].href === url){
+            if(scripts[x].getAttribute("href") === url){
               found = true;
               break;
             }
@@ -132,10 +132,10 @@ function RadicalFrame(id, doc, json){
   }
   this.Document = doc;
   this.InstanceID = id;
-  if(typeof json !== "undefined"){
-    this.InitFrame(json);
+  if(typeof json === "undefined"){
+    json = "{}";
   }
-  
+  this.InitFrame(json);
 }
 
 RadicalFrame.prototype = {
@@ -163,6 +163,10 @@ RadicalFrame.prototype = {
    */
   Widgets: [],
   /**
+   * This array stores references to the instantiated widget instances built from the Widgets array.
+   */
+  Children: [],
+  /**
    * The scripts which this frame is dependent on.
    */
   Scripts: [],
@@ -186,31 +190,305 @@ RadicalFrame.prototype = {
    * The DOM element from which events will originate.
    */
   EventPrimitive: null,
-  
+  /**
+   * Event fired during the load process. This function can be overridden by the frame implementation
+   * to handle the layout for this type of frame. This event should at least instantiate the Primitive and EventPrimitive properties.
+   * @param {object} frame The RadicalFrame object that is being loaded.
+   * @param {int} mode The display mode, represented by the "RadicalFrameModes" enumerator, and determines whether the frame is displayed in a separate window or a
+   * subform of a document.
+   * @param {Element} context The DOM element into which the frame should be created. If the mode is set to display this frame in a separate window, then the element
+   * will be the document element of the current context. If this is an embedded window, the context will be the element under which the frame should be created.
+   */
   OnFrameLoad: function(frame, mode, context){
-
+    try{
+      Primitive = this.Document.getElementsByTagName("body")[0];
+      EventPrimitive = Primitive;
+    }
+    catch(e){
+      console.log(e);
+    }
   },
-  
+  /**
+   * This is an event handler which allows an implementing frame designer to determine what should happen when a frame is shown.
+   * @param {object} frame The frame instance that is being shown.
+   * @param {Element} context the context in which the frame is being shown.
+   */
   OnFrameShow: function(frame, context){
 
   },
-
+  /**
+   * An event handler that allows the frame designer to determine what should happen to the frame when it is hidden.
+   * @param {object} frame The frame being hidden.
+   * @param {Element} context The DOM context in which the frame is residing.
+   */
   OnFrameHide: function(frame, context){
 
   },
-
+  /**
+   * An event handler which allows the frame design to make specific behavioral changes based on the change to a property.
+   * @param {object} frame The frame instance on which the property was changed.
+   * @param {Element} context The DOM element in which the frame resides.
+   * @param {string} property The property name that has been changed.
+   */
   OnFramePropertyChange: function(frame, context, property){
 
   },
+  /**
+   * An event handler for the instance of a frame which handles a mouse click event on the primitive implemented by the frame.
+   * @param {object} frame The frame instance on which the mouse event occurred.
+   * @param {Element} context The context in which the frame resides.
+   * @param {MouseEvent} event The mouse event received from the onmouseclick event for the frame instance's primitive.
+   */
+  OnInstanceClick: function(frame, context, event){
 
+  },
+  /**
+   * Handles a frame instance's onmousedown event.
+   * @param {object} frame The frame instance on whic hthe mousedown event occurred.
+   * @param {Element} context The context in which the frame instance resides.
+   * @param {MouseEvent} event The event passed by the mousedown event.
+   */
+  OnInstanceMouseDown: function(frame, context, event){
+
+  },
+  /**
+   * Handles a frame instance's onmouseup event.
+   * @param {object} frame The frame instance on which the event occurred.
+   * @param {Element} context The DOM element in which the frame instance resides.
+   * @param {MouseEvent} event The event passed by the mouseup event.
+   */
+  OnInstanceMouseUp: function(frame, context, event){
+
+  },
+  /**
+   * An event handler for the onmousemove event for a frame instance.
+   * @param {object} frame The frame on which the event occurred.
+   * @param {Element} context The DOM context in which the frame resides.
+   * @param {MouseEvent} event The event passed by the mousemove event.
+   */
+  OnInstanceMouseMove: function(frame, context, event){
+
+  },
+  /**
+   * An event handler for the frame instance's onmouseenter event.
+   * @param {object} frame The frame instance on which the event occurred.
+   * @param {Element} context The DOM context in which the frame instance resides.
+   * @param {MouseEvent} event The event passed by the mouseenter event.
+   */
+  OnInstanceMouseEnter: function(frame, context, event){
+
+  },
+  /**
+   * An event handler for the onmouseleave event for the frame instance.
+   * @param {object} frame The frame instance on which the event occurred.
+   * @param {Element} context The DOM context in which the frame instance resides.
+   * @param {MouseEvent} event The event passed by the mouseleave event.
+   */
+  OnInstanceMouseLeave: function(frame, context, event){
+
+  },
+  /**
+   * An event handler for the ondblclick event for the frame instance.
+   * @param {object} frame The frame instance on which the event occurred.
+   * @param {Element} context The DOM context in which the frame instance resides.
+   * @param {MouseEvent} event The event passed by the dblclick event.
+   */
+  OnInstanceDoubleClick: function(frame, context, event){
+    
+  },
+  /**
+   * The event handler for a frame instance's onkeydown event.
+   * @param {object} frame The frame instance on which the event occurred.
+   * @param {Element} context The DOM context in which the frame instance resides.
+   * @param {KeyEvent} event The event object passed by the onkeydown event.
+   */
+  OnInstanceKeyDown: function(frame, context, event){
+
+  },
+  /**
+   * Event handler for the frame instance's onkeyup event.
+   * @param {object} frame The frame instance on which the event occurred.
+   * @param {Element} context The DOM context in which the frame instance resides.
+   * @param {KeyEvent} event The event passed by the keyup event
+   */
+  OnInstanceKeyUp: function(frame, context, event){
+
+  },
+  /**
+   * The event handler for the frame instance's onkeypress event.
+   * @param {object} frame The frame instance on which the event occurred.
+   * @param {Element} context The DOM context in which the frame instance resides.
+   * @param {KeyEvent} event The event object passed by the onkeypress event.
+   */
+  OnInstanceKeyPress: function(frame, context, event){
+
+  },
+  /**
+   * Causes the frame instance to be shown.
+   */
   Show: function(){
 
   },
-
+  /**
+   * Causes the frame instance to be hidden.
+   */
   Hide: function(){
 
   },
+  /**
+   * Loads a frame instance.
+   */
   Load: function(context, mode){
+    var retval = true;
+        try{
+            this.Context = context;
+            
+            var cevent = window[this.InstanceID + "_OnInstanceClick"];
+            if(typeof cevent === "function"){
+                this.OnInstanceClick = cevent;
+            }
+            var cevent = window[this.InstanceID + "_OnInstanceDoubleClick"];
+            if(typeof cevent === "function"){
+                this.OnInstanceDoubleClick = cevent;
+            }
+            
+            cevent = window[this.InstanceID + "_OnInstanceMouseMove"];
+            if(typeof cevent === "function"){
+                this.OnInstanceMouseMove= cevent;
+            }
+            cevent = window[this.InstanceID + "_OnInstanceMouseEnter"];
+            if(typeof cevent === "function"){
+                this.OnInstanceMouseEnter = cevent;
+            }
+            cevent = window[this.InstanceID + "_OnInstanceMouseLeave"];
+            if(typeof cevent === "function"){
+                this.OnInstanceMouseLeave = cevent;
+            }
+            cevent = window[this.InstanceID + "_OnInstanceMouseDown"];
+            if(typeof cevent === "function"){
+                this.OnInstanceMouseDown = cevent;
+            }
+            cevent = window[this.InstanceID + "_OnInstanceMouseUp"];
+            if(typeof cevent === "function"){
+                this.OnInstanceMouseUp = cevent;
+            }
+
+            cevent = window[this.InstanceID + "_OnInstanceKeyUp"];
+            if(typeof cevent === "function"){
+                this.OnInstanceKeyUp = cevent;
+            }
+            cevent = window[this.InstanceID + "_OnInstanceKeyDown"];
+            if(typeof cevent === "function"){
+                this.OnInstanceKeyDown = cevent;
+            }
+            cevent = window[this.InstanceID + "_OnInstanceKeyPress"];
+            if(typeof cevent === "function"){
+                this.OnInstanceKeyPress = cevent;
+            }
+
+            //frame event assignments
+            cevent = window[this.Name + "_OnFrameLoad"];
+            if(typeof cevent === "function"){
+                this.OnFrameLoad = cevent;
+            }
+            
+            cevent = window[this.Name + "_OnFramePropertyChange"];
+            if(typeof cevent === "function"){
+                this.OnFramePropertyChange = cevent;
+            }
+            
+            cevent = window[this.Name + "_OnFrameLoad"];
+            if(typeof cevent === "function"){
+                cevent(this, this.Context);
+            }
+            if(this.EventPrimitive == null){
+                this.EventPrimitive = this.Primitive;
+            }
+            
+            if(this.EventPrimitive){
+                var context = this.Context;
+                var frame = this;
+                this.EventPrimitive.onclick = function(event){
+                    if(typeof frame.OnInstanceClick === "function"){
+                        frame.OnInstanceClick(frame, context, event);
+                    }
+                };
+                this.EventPrimitive.ondblclick = function(event){
+                    if(typeof frame.OnInstanceDoubleClick === "function"){
+                        frame.OnInstanceDoubleClick(frame, context, event);
+                    }
+                };
+                this.EventPrimitive.onmousemove = function(event){
+                    if(typeof frame.OnInstanceMouseMove === "function"){
+                        frame.OnInstanceMouseMove(frame, context, event);
+                    }
+                };
+                this.EventPrimitive.onmouseenter = function(event){
+                    if(typeof frame.OnInstanceMouseEnter === "function"){
+                        frame.OnInstanceMouseEnter(frame, context, event);
+                    }
+                };
+                this.EventPrimitive.onmouseleave = function(event){
+                    if(typeof frame.OnInstanceMouseLeave === "function"){
+                        frame.OnInstanceMouseLeave(frame, context, event);
+                    }
+                }
+                
+                this.EventPrimitive.onmousedown = function(event){
+                    if(typeof frame.OnInstanceMouseDown === "function"){
+                        frame.OnInstanceMouseDown(frame, context, event);
+                    }
+                }
+                this.EventPrimitive.onmouseup = function(event){
+                    if(typeof frame.OnInstanceMouseUp === "function"){
+                        frame.OnInstanceMouseUp(frame, context, event);
+                    }
+                }
+
+                this.EventPrimitive.onkeydown = function(event){
+                    if(typeof frame.OnInstanceKeyDown === "function"){
+                        frame.OnInstanceKeyDown(frame, context, event);
+                    }
+                }
+                this.EventPrimitive.onkeyup = function(event){
+                    if(typeof frame.OnInstanceKeyUp === "function"){
+                        frame.OnInstanceKeyUp(frame, context, event);
+                    }
+                }
+                this.EventPrimitive.onkeypress = function(event){
+                    if(typeof frame.OnInstanceKeyPress === "function"){
+                        frame.OnInstanceKeyPress(frame, context, event);
+                    }
+                }
+
+                if(this.Scripts){
+                  for(var x = 0; x < this.Scripts.length; x++){
+                    rdinclude(this.Scripts[x], "script");
+                  }
+                }
+
+                if(this.StyleSheets){
+                  for(var x = 0; x < this.StyleSheets.length; x++){
+                    rdinclude(this.StyleSheets[x], "css");
+                  }
+                }
+
+
+
+                retval = true;
+            }
+        }
+        catch(e){
+            console.log(e);
+            retval = false;
+        }
+
+        return retval;
+  },
+  AddChild: function(widget){
+
+  },
+  RemoveChild: function(widget){
 
   },
   /**

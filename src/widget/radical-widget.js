@@ -346,22 +346,6 @@ RadicalWidget.prototype = {
         var retval = true;
         try{
             this.Context = context;
-            /*var widgetScript = document.getElementById(this.InstanceID + "_WidgetEvents");
-            var widgetDec = document.getElementById("WidgetDeclarations");
-            
-            var head = document.getElementsByTagName("head")[0];*/
-            
-            /*if(!widgetDec){
-                widgetDec = document.createElement("script");
-                widgetDec.id = "WidgetDeclarations";
-                head.appendChild(widgetDec);
-                if(widgetDec.innerText.indexOf(this.InstanceID + "_WidgetEvents") == -1){
-                    widgetDec.innerText += "var " + this.InstanceID + "_WidgetEvents = {};\n";
-                    
-                }
-            }
-            var widgetEvents = window[this.InstanceID + "_WidgetEvents"];
-            widgetEvents.WidgetInstance = this;*/
             
             var cevent = window[this.InstanceID + "_OnInstanceClick"];
             if(typeof cevent === "function"){
@@ -430,23 +414,7 @@ RadicalWidget.prototype = {
                 this.OnWidgetSetValue = cevent;
             }
 
-            /*if(widgetScript == null){
-                widgetScript = document.createElement("script");
-                widgetScript.id = this.InstanceID + "_WidgetEvents";
-            }*/
-
-            /*widgetScript.innerText = this.InstanceID + "_WidgetEvents.OnWidgetLoad = " + this.OnWidgetLoad + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetSetEnabled = " + this.OnWidgetSetEnabled + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetGetEnabled = " + this.OnWidgetGetEnabled + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetSetVisible = " + this.OnWidgetSetVisible + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetGetVisible = " + this.OnWidgetGetVisible + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetSetValue = " + this.OnWidgetSetValue + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetGetValue = " + this.OnWidgetGetValue + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetAddChild = " + this.OnWidgetAddChild + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetRemoveChild = " + this.OnWidgetRemoveChild + ";\n";
-            widgetScript.innerText += this.InstanceID + "_WidgetEvents.OnWidgetPropertyChange = " + this.OnWidgetPropertyChange + ";\n";*/
             
-            //head.appendChild(widgetScript);
             cevent = window[this.Name + "_OnWidgetLoad"];
             if(typeof cevent === "function"){
                 cevent(this, this.Context);
@@ -454,7 +422,7 @@ RadicalWidget.prototype = {
             if(this.EventPrimitive == null){
                 this.EventPrimitive = this.Primitive;
             }
-            //eval(this.InstanceID + "_WidgetEvents.OnWidgetLoad(" + this.InstanceID + "_WidgetEvents.WidgetInstance, " + this.InstanceID + "_WidgetEvents.WidgetInstance.Context);");
+            
             if(this.EventPrimitive){
                 var context = this.Context;
                 var widget = this;
@@ -499,6 +467,8 @@ RadicalWidget.prototype = {
             console.log(e);
             retval = false;
         }
+
+        return retval;
     },
 
     /**
@@ -634,6 +604,9 @@ RadicalWidget.prototype = {
                         this.Children = [];
                     }
                     this.Children.push(child);
+                    if(child.Primitive === null){
+                        child.Load(this.Primitive);
+                    }
                     child.Parent = this;
                 }
             }
