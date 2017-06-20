@@ -64,6 +64,10 @@ RadicalWidget.prototype = {
      */
     Classes: [],
     /**
+     * This is an array of widget definitions which reside under this widget.
+     */
+    Widgets: [],
+    /**
      * Children defines child instances under this widget instance.
      */
     Children: [],
@@ -459,6 +463,16 @@ RadicalWidget.prototype = {
                 this.EventPrimitive.onmouseup = function(event){
                     if(typeof widget.OnInstanceMouseUp === "function"){
                         widget.OnInstanceMouseUp(widget, context, event);
+                    }
+                }
+            }
+
+            if(this.Widgets){
+                for(var x = 0; x < this.Widgets.length; x++){
+                    var def = this.Widgets[x];
+                    if(typeof this.InstanceID !== "undefined" && typeof def.Name !== "undefined"){
+                        var widget = new RadicalWidget(this.InstanceID + "_" + def.Name, JSON.stringify(def));
+                        this.AddChild(widget);
                     }
                 }
             }

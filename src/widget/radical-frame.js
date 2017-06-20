@@ -473,7 +473,15 @@ RadicalFrame.prototype = {
                   }
                 }
 
-
+                if(this.Widgets){
+                    for(var x = 0; x < this.Widgets.length; x++){
+                        var def = this.Widgets[x];
+                        if(typeof def.InstanceID !== "undefined"){
+                            var widget = new RadicalWidget(def.InstanceID, JSON.stringify(def));
+                            this.AddChild(widget);
+                        }
+                    }
+                }
 
                 retval = true;
             }
@@ -485,11 +493,55 @@ RadicalFrame.prototype = {
 
         return retval;
   },
+  /**
+   * Adds a widget instance to this frame as a child element.
+   * @param {object} widget The widget instance to add as a child.
+   * @returns {boolean} Returns true if the child was added, or false if it could not be added.
+   */
   AddChild: function(widget){
-
+    var retval = false;
+    try{
+        
+        if(child.InstanceID){
+            if(typeof this.Children === "undefined"){
+                this.Children = [];
+            }
+            else if(this.Children.constructor !== Array){
+                this.Children = [];
+            }
+            this.Children.push(child);
+            if(child.Primitive === null){
+                child.Load(this.Primitive);
+            }
+            child.Parent = this;
+            retval = true;
+        }
+    }
+    catch(e){
+        console.log(e);
+    }
+    return retval;
   },
+  /**
+   * Removes a widget instance from the frame.
+   * @param {object} widget The widget instance to remove.
+   * @returns {boolean} returns true if the widget instance was successfully removed.
+   */
   RemoveChild: function(widget){
-
+    var retval = false;
+    try{
+        var x = this.GetChildIndex(child);
+        if(x > -1){
+            this.Children[x].Parent = null;
+            this.Children.splice(x, 1);
+            retval = true;
+        }
+        
+    }
+    catch(e){
+        console.log(e);
+    }
+    return retval;
   },
   /**
    * This function initializes a RadicalFrame object based on a JSON definition.
@@ -525,6 +577,11 @@ RadicalFrame.prototype = {
             if(frame.StyleSheets){
                 this.StyleSheets = frame.StyleSheets;
             }
+
+            this.Children = [];
+            if(frame.Children){
+                this.Children = frame.Children;
+            }
             
             this.Primitive = null;
             if(frame.Primitive){
@@ -542,10 +599,26 @@ RadicalFrame.prototype = {
         return retval;
   },
   ExportFrame: function(){
-
+    var script = "var " + this.Name + "_Frame_Definition = " + JSON.stringify(this,null,4) + ";\n";
+    script += "var " + this.Name + "_Frame_JSON = JSON.stringify(" + this.Name + "_Frame_Definition);\n"
+    script += "var " + this.Name + "_OnFrameLoad = " + this.OnFrameLoad.toString() + ";\n";
+    script += "var " + this.Name + "_OnFramePropertyChange = " + this.OnFramePropertyChange.toString() + ";\n";
+    script += "var " + this.Name + "_OnFrameShow = " + this.OnFrameShow.toString() + ";\n";
+    script += "var " + this.Name + "_OnFrameHide = " + this.OnFrameHide.toString() + ";\n";
+    return script;
   },
   Compile: function(){
-
+    var retval = "";
+    try{
+        if(this.Document){
+            retval = "<html>";
+            //TODO - Finish this...
+        }
+    }
+    catch(e){
+        console.log(e);
+    }
+    return retval;
   }
   
 }
